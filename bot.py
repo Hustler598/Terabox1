@@ -22,11 +22,18 @@ from redis_db import db
 from send_media import VideoSender
 from tools import generate_shortenedUrl, is_user_on_chat, remove_all_videos, get_urls_from_string, extract_code_from_url, check_url_patterns
 from terabox import get_data
-
+from http.server import HTTPServer, SimpleHTTPRequestHandler
+import threading
 log = logging.getLogger(__name__)
 
 bot = TelegramClient("bot", API_ID, API_HASH)
 
+def start_web_server():
+    port = int(os.environ.get('PORT', 8080))
+    server_address = ('', port)
+    httpd = HTTPServer(server_address, SimpleHTTPRequestHandler)
+    print(f"Serving on port {port}")
+    httpd.serve_forever()
 # url_queues = defaultdict(asyncio.Queue)  # Queue per user
 processing_tasks = {}  # Track processing tasks per user
 
@@ -455,6 +462,8 @@ if __name__ == "__main__":
         log.info("=== Bot starting ===")
         print("Bot is starting...")
         port = int(os.environ.get('PORT', 8080))
+        web_thread = threading.Thread(target=start_web_server)
+        web_thread.start()
         bot.start(bot_token=BOT_TOKEN)
         print("Bot is running...")
         bot.run_until_disconnected()
