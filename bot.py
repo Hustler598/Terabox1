@@ -454,6 +454,7 @@ if __name__ == "__main__":
         # Start the bot
         log.info("=== Bot starting ===")
         print("Bot is starting...")
+      port = int(os.environ.get('PORT', 8080))
         bot.start(bot_token=BOT_TOKEN)
         print("Bot is running...")
         bot.run_until_disconnected()
